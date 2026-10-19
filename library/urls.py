@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from .views import *
 urlpatterns = [
-    path('books/', BookListView.as_view(), name='books'),
+    path('', BookListView.as_view(), name='books'),
     path('books/new/', BookCreateView.as_view(), name='book_create'),
     path('books/<pk>/', BookDetailView.as_view(), name='book_detail'),
     path('books/<pk>/edit', BookUpdateView.as_view(), name='book_edit'),

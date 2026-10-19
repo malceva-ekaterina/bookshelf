@@ -90,7 +90,7 @@
                         <img src="{{ review.user.profile.avatar.url }}" alt="" class="img-fluid">
                     </div>
                     <div class="col-9 p-1">
-                        <p>{{ review.user.username }}</p>
+                        <p><a href="{% url "user_profile" review.user.username %}">{{ review.user.username }}</a></p>
                         <p>{{ review.get_stars }}</p>
                         <p>{{ review.text }}</p>
                     </div>
@@ -146,7 +146,7 @@
                         <img src="{{ comment.user.profile.avatar.url }}" alt="" class="img-fluid ">
                     </div>
                     <div class="col-10 p-1">
-                        <p>{{ comment.user.username }}</p>
+                        <p><a href="{% url "user_profile" comment.user.username %}">{{ comment.user.username }}</a></p>
                         
                         <p>{{ comment.text }}</p>
                     </div>
@@ -176,7 +176,7 @@
                         <img src="{{ reply.user.profile.avatar.url }}" alt="" class="img-fluid">
                     </div>
                     <div class="col-10 p-1">
-                        <p>{{ reply.user.username }}</p>
+                        <p><a href="{% url "user_profile" reply.user.username %}">{{ reply.user.username }}</a></p>
                         
                         <p>{{ reply.text }}</p>
                     </div>
