@@ -1,0 +1,20 @@
+body {
+    background-color: whitesmoke;
+}
+header {
+    padding: 10px;
+    background-color: #463a2c;
+    margin-bottom: 10px;
+}
+
+.img-box {
+    height: 100%;
+    width: 200px;
+    overflow: hidden;
+}
+.img-fluid  {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    align-content: center;
+}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} edit {% endblock title %}
+{% block content %}
+
+<form method="post" enctype="multipart/form-data" class="border p-3 rounded">
+    <h1>Edit Profile</h1>
+    <hr>
+    {% csrf_token %}
+    
+    {% for field in user_form %}
+        <div class="mb-3 form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    {{ user_form.non_field_errors }}
+    
+    {% for field in profile_form %}
+        <div class="mb-3 form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    
+    {{ profile_form.non_field_errors }}
+
+    <button type="submit" class="btn btn-outline-dark">Update</button>
+</form>
+{% endblock content %}
+
+

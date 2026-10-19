@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Book Form{% endblock title %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data" class="border p-3 rounded">
+        <h1>Add Book</h1>
+        <hr>
+        {% csrf_token %}
+
+        <div class="mb-3 form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3 form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3 form-group">
+            {{ form.cover.label_tag }}
+            {{ form.cover }}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3 form-group">
+            {{ form.genres.label_tag }}
+            {{ form.genres }}
+             <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#genreModal">
+                No genre? create
+            </button>
+           
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3 form-group">
+            {{ form.author.label_tag }}
+            {{ form.author }}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+            {% endfor %}
+            <small>
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#authorModal">
+                    No Author? create
+                </button>
+            </small>
+        </div>
+         <button type="submit" class="btn btn-outline-primary">Create</button>
+       
+    </form>
+
+    <div class="modal fade" id="authorModal" tabindex="-1" aria-labelledby="authorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authorModalLabel">Create Author</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url "author_create" %}" method="post">
+                    {% csrf_token %}
+                    {{ author_form.as_p }}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-outline-primary">Create</button>
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="genreModal" tabindex="-1" aria-labelledby="genreModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="genreModalLabel">Create Genre</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url "genre_create" %}" method="post">
+                    {% csrf_token %}
+                    {{ genre_form.as_p }}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-outline-primary">Create</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

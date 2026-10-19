@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Sing Up{% endblock title %}
+{% block content %}
+<form method="post" class="border p-3 rounded">
+    <h1>Sing Up</h1>
+    <hr>
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="mb-3 form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+
+    {{ form.non_field_errors }}
+
+  
+    <button type="submit" class="btn btn-outline-primary">Create Account</button>
+
+{% endblock content %}

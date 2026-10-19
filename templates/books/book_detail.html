@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Book {{ book.title }}{% endblock title %}
+{% block content %}
+    <div class="row g-1">
+        <div class="col-5" style="width: 300px; height: 400px;">
+            <img src="{{ book.cover.url }}" class="img-fluid rounded-start" alt="...">
+        </div>
+        <div class="col-7">
+            <div class="d-flex flex-column position-relative h-100 p-1">
+                <h1 class="card-title"><a href="{% url "book_detail" book.pk%}">{{ book.title }}</a></h1>
+                <p class="card-text">{{ book.description }}</p>
+                <p class="card-text"><small class="text-muted">
+                    <span>Author: </span>
+                    {% for author in object.author.all %}
+                        <span>{{ author.full_name }}</span>
+                    {% endfor %}
+                </small></p>
+                <p class="card-text">
+                    <small class="text-muted">
+                    <span>Genre: </span>
+                    {% for genre in object.genres.all %}
+                        <span>{{ genre.name }}</span>
+                    {% endfor %}
+                    </small>
+                </p>
+                <small class="d-flex mt-auto">
+                    <div class="d-flex align-items-center text-muted">
+                            <span class="pe-1">Like: </span>
+                            {% if user.is_authenticated %}
+                                <form action="{% url 'book_like' book.pk %}" method="post" class="p-1">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link p-0">
+                                        {% if book_is_liked %}
+                                            <i class="bi bi-suit-heart-fill text-danger"></i>
+                                        {% else %}
+                                            <i class="bi bi-suit-heart" ></i>
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                            {% else %}
+                                <i class="bi bi-suit-heart" ></i>
+                            {% endif %}
+                            <span class="p-1">{{ book.likes.count }}</span>
+                    </div>
+                    <div class="d-flex align-items-center text-muted">
+                        <span class="p-1">Reviews: </span>
+                        <span class="p-1"><i class="bi bi-chat-square-quote"></i></span>
+                        <span class="p-1">{{ book.reviews.count }}</span>
+                    </div>
+                    <div class="d-flex align-items-center text-muted">
+                        <span class="p-1">Comments: </span>
+                        <span class="p-1"><i class="bi bi-chat-square-dots"></i></span>
+                        <span class="p-1">{{ book.comments.count }}</span>
+                    </div>
+                </small>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div>
+        <h2>Review</h2>
+        <div>
+            {% if not review_exist %}
+            
+                <form action="{% url "review_create" pk=book.pk %}" method="post" class="border p-3 rounded">
+                    <h3>Left Review</h3>
+                    <hr>
+                    {% csrf_token %}
+                    {% for field in review_form %}
+                        <div class="mb-3 form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-outline-primary">Send</button>
+                </form>
+            {% endif %}
+        </div>
+        <br>
+        <div class="d-flex flex-column p-1">
+            {% for review in reviews %}
+                <div class="row">
+                    <div class="col-2" style="height: 200px;">
+                        <img src="{{ review.user.profile.avatar.url }}" alt="" class="img-fluid">
+                    </div>
+                    <div class="col-9 p-1">
+                        <p>{{ review.user.username }}</p>
+                        <p>{{ review.get_stars }}</p>
+                        <p>{{ review.text }}</p>
+                    </div>
+                    <div class="col-1 p-1">
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'review_like' pk=book.pk r_pk=review.id %}" class="d-inline me-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link p-0 border-0">
+                                    {% if review.is_liked_by_user %}
+                                        <i class="bi bi-suit-heart-fill text-danger"
+                                            style="font-size: 20px;"></i>
+                                    {% else %}
+                                        <i class="bi bi-suit-heart"
+                                            style="font-size: 20px;"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
+                        {% endif %}
+                            <span>{{ review.likes.count }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <hr>
+    <div>
+        <form action="{% url "comment_create" book.pk %}" method="post" class="border p-3 rounded">
+            {% csrf_token %}
+            <h3>Add comment</h3>
+            <hr>
+            {% for field in comment_form %}
+                <div class="mb-3 form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-outline-primary">Send</button>
+        </form>
+
+        <div class="d-flex flex-column">
+            <h2>Commnets</h2>
+            {% for comment in comments %}
+                <div class="row  mt-2 mb-2">
+                    <div class="col-1 row-1" style="">
+                        <img src="{{ comment.user.profile.avatar.url }}" alt="" class="img-fluid ">
+                    </div>
+                    <div class="col-10 p-1">
+                        <p>{{ comment.user.username }}</p>
+                        
+                        <p>{{ comment.text }}</p>
+                    </div>
+                    <div class="col-1 p-1">
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'comment_like' pk=book.pk c_pk=comment.id %}" class="d-inline me-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link p-0 border-0">
+                                    {% if comment.is_liked_by_user %}
+                                        <i class="bi bi-suit-heart-fill text-danger"
+                                            style="font-size: 20px;"></i>
+                                    {% else %}
+                                        <i class="bi bi-suit-heart"
+                                            style="font-size: 20px;"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
+                        {% endif %}
+                            <span>{{ comment.likes.count }}</span>
+                    </div>
+                </div>
+                {% for reply in comment.replies.all %}
+                <div class="row mt-2 mb-2 ms-2">
+                    <div class="col-1 row-1">
+                        <img src="{{ reply.user.profile.avatar.url }}" alt="" class="img-fluid">
+                    </div>
+                    <div class="col-10 p-1">
+                        <p>{{ reply.user.username }}</p>
+                        
+                        <p>{{ reply.text }}</p>
+                    </div>
+                    <div class="col-1 p-1">
+                        {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'comment_like' pk=book.pk c_pk=comment.id %}" class="d-inline me-1">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link p-0 border-0">
+                                    {% if reply.is_liked_by_user %}
+                                        <i class="bi bi-suit-heart-fill text-danger"
+                                            style="font-size: 20px;"></i>
+                                    {% else %}
+                                        <i class="bi bi-suit-heart"
+                                            style="font-size: 20px;"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
+                        {% endif %}
+                            <span>{{ comment.likes.count }}</span>
+                    </div>
+                    
+                </div>
+
+                {% endfor %}
+                <form action="{% url "comment_create" book.pk %}" method="post" class="border p-3 rounded">
+                        {% csrf_token %}
+                        <h3>Add reply</h3>
+                        <hr>
+                        <input type="hidden" name="parent_id" value="{{ comment.pk }}">
+                        {% for field in comment_form %}
+                            <div class="mb-3 form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-outline-primary">Send</button>
+                    </form>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

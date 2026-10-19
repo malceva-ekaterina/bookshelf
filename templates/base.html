@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static '/style.css' %}">
+</head>
+<body>
+    <header>
+        <ul class="nav justify-content-end">
+            <li class="nav-item me-auto">
+                <a class="nav-link text-light" href="{% url "books" %}">Main</a>
+            </li>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url "profile" %}" aria-current="page">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <form action="{% url "logout" %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="LogOut" class="btn btn-link text-light">
+                    </form>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url "login" %}" aria-current="page">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{% url "sing_up" %}">Sing Up</a>
+                </li>
+            {% endif %}
+            
+        </ul>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock content %}
+    </main>
+    <footer>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>

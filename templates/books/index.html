@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock title %}
+{% block content %}
+    <form method="get">
+        <input type="search" name="q" value="{{ selected_query  }}" placeholder="Search..">
+        <select name="genre">
+            <option value="">-- All --</option>
+            {% for genre in genres %}
+                <option value="{{ genre.id }}" {% if genre.id == selected_genre %}selected{% endif %}>
+                    {{ genre.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-outline-dark"><i class="bi bi-search p-1"></i>Search</button>
+    </form>
+    <hr>
+    <div class="row g-1 justify-content-center">
+        {% for book in books %}
+            <div class="card row g-0 m-2" style="width: 500px; height: 300px;">
+                <div class=" img-box col-md-5">
+                    <img src="{{ book.cover.url}}" class="img-fluid img" alt="">
+                </div>
+                <div class="d-flex flex-column col-7 h-100" >
+                    <h2 class="card-title"><a href="{% url "book_detail" book.pk%}">{{ book.title }}</a></h2>
+                    <p class="card-text text-truncate">{{ book.description }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <span>Author: </span>
+                            {% for author in book.author.all %}
+                                <span>{{ author.full_name }}</span>
+                            {% endfor %}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                        <span>Genre: </span>
+                        {% for genre in book.genres.all %}
+                            <span>{{ genre.name }}</span>
+                        {% endfor %}
+                        </small>
+                    </p>
+                        <small class="d-flex mt-auto">
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="">Like: </span>
+                                <i class="bi bi-suit-heart p-1" ></i>
+                                <span class="p-1">{{ book.likes.count }}</span>
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="p-1">Reviews: </span>
+                                <span class="p-1"><i class="bi bi-chat-square-quote"></i></span>
+                                <span class="p-1">{{ book.reviews.count }}</span>
+                            </div>
+                            <div class="d-flex align-items-center text-muted">
+                                <span class="p-1">Comments: </span>
+                                <span class="p-1"><i class="bi bi-chat-square-dots"></i></span>
+                                <span class="p-1">{{ book.comments.count }}</span>
+                            </div>
+                        </small>
+                    
+                </div>
+            </div>
+            
+        {% endfor %}    
+    </div>
+    
+    
+{% endblock content %}
