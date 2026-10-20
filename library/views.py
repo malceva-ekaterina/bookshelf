@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, DetailView, DeleteView, UpdateView, ListView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q
+from django.db.models import Avg, Q, Subquery, OuterRef, Count
+from django.db.models.functions import Coalesce
 from .models import *
 from .forms import *
 from likes.utils import *
+from collections import defaultdict
+
 # Create your views here.
 
 class AuthorCreateView(LoginRequiredMixin, CreateView):
@@ -36,7 +39,7 @@ class BookListView(ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        queryset = super().get_queryset().prefetch_related('genres')
+        queryset = super().get_queryset()
 
         query = self.request.GET.get('q')
         genre_id = self.request.GET.get('genre')
@@ -48,7 +51,19 @@ class BookListView(ListView):
         if genre_id:
             queryset = queryset.filter(genres__id=genre_id)
 
-        return queryset.distinct()
+        reviews_subquery = Review.objects.filter(
+            book_id=OuterRef('pk')  
+        ).values('book_id').annotate(avg=Avg('rating')).values('avg')
+
+
+        queryset = queryset.annotate(
+            avg_rating=Coalesce(Subquery(reviews_subquery), 0.0)
+        )
+
+        if genre_id:
+            queryset = queryset.distinct()
+
+        return queryset.prefetch_related('genres')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,29 +81,43 @@ class BookDetailView(DetailView):
     template_name = "books/book_detail.html"
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('genres', 'author')
+        return super().get_queryset().prefetch_related('genres', 'author').annotate(avg_rating=(Avg('reviews__rating')*100/5))
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['book_is_liked'] = is_liked_by(self.request.user, Book, self.object.pk)
         
-        comments_qs = (
+        qs = (
             self.object.comments
-            .filter(parent__isnull=True)
             .select_related('user', 'user__profile')
-            .prefetch_related('replies__user', 'replies__user__profile')
+            .annotate(likes_count=Count('likes'))      # счётчик лайков
             .order_by('-created_at')
         )
-        context['comments'] = annotate_liked_by_user(comments_qs, self.request.user, Comment)
-        
+        qs = annotate_liked_by_user(qs, self.request.user, Comment)  # ← аннотация на ВСЕ
+
+        # 2. Строим дерево
+        children_map = defaultdict(list)
+        for c in qs:
+            children_map[c.parent_id].append(c)
+        for c in qs:
+            c.children = children_map[c.id]
+
+        context['comments'] = children_map[None]
         review_qs = (
             self.object.reviews.order_by('-created_at')
         )
-        context['review_exist'] = Review.objects.filter(book=self.object, user=self.request.user).exists
-        
+        if self.request.user.is_authenticated:
+            context['review_exist'] = Review.objects.filter(book=self.object, user=self.request.user).exists
+        else:
+            context['review_exist'] = False
+            
+        context['review_form'] = ReviewForm()   
         context['reviews'] = annotate_liked_by_user(review_qs, self.request.user, Review)
-        context['review_form'] = ReviewForm()
+        if self.request.user.is_authenticated and Review.objects.filter(book=self.object, user=self.request.user).exists():
+            review = Review.objects.get(book=self.object, user=self.request.user)
+            context['review_form'] = ReviewForm(instance=review)
         context['comment_form'] = CommentForm()
+        
         return context
     
     
@@ -134,8 +163,8 @@ class BookDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 @login_required
-def create_review(request, pk):
-    book = get_object_or_404(Book, id=pk)
+def create_review(request, b_pk):
+    book = get_object_or_404(Book, id=b_pk)
     if not Review.objects.filter(book=book, user=request.user).exists():
         if request.method == 'POST':
             form = ReviewForm(request.POST)
@@ -144,7 +173,7 @@ def create_review(request, pk):
                 form.instance.user = request.user
                 form.instance.book = book
                 form.save()
-    return redirect('book_detail', pk)
+    return redirect('book_detail', b_pk)
         
 @login_required
 def create_comment(request, pk):
@@ -164,3 +193,21 @@ def create_comment(request, pk):
     )
     return redirect('book_detail', pk)
 
+class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Review
+    template_name = "reviews/review_form.html"
+    form_class = ReviewForm
+    def get_success_url(self):
+            return reverse('book_detail', kwargs={'pk': self.request.path.GET.get('b_pk') | self.request.path.POST.get('b_pk') })
+    def test_func(self):
+            return self.get_object().user == self.request.user
+
+@login_required
+def review_update(request, b_pk):
+    book = Book.objects.get(pk=b_pk)
+    review = get_object_or_404(Review, user=request.user, book=book)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+    return redirect('book_detail', b_pk)

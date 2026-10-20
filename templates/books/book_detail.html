@@ -7,7 +7,7 @@
         </div>
         <div class="col-7">
             <div class="d-flex flex-column position-relative h-100 p-1">
-                <h1 class="card-title"><a href="{% url "book_detail" book.pk%}">{{ book.title }}</a></h1>
+                <h1 class="card-title display-3"><a href="{% url "book_detail" book.pk%}" class="text-decoration-none">{{ book.title }}</a></h1>
                 <p class="card-text">{{ book.description }}</p>
                 <p class="card-text"><small class="text-muted">
                     <span>Author: </span>
@@ -57,31 +57,38 @@
         </div>
     </div>
     <hr>
+    <div class="rating">
+        <span>Rating</span>
+        {% if book.avg_rating == None %}
+            <span class="text-muted"><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i></span>
+        {% else %}
+            <span class="bar" style="--progress: {{ book.avg_rating|default:0 }};"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+        {% endif %}
+    </div>
     <div>
         <h2>Review</h2>
+        {% if not review_exist and user.is_authenticated %}
         <div>
-            {% if not review_exist %}
-            
-                <form action="{% url "review_create" pk=book.pk %}" method="post" class="border p-3 rounded">
-                    <h3>Left Review</h3>
-                    <hr>
-                    {% csrf_token %}
-                    {% for field in review_form %}
-                        <div class="mb-3 form-group">
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {% if field.help_text %}
-                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="invalid-feedback d-block">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-outline-primary">Send</button>
-                </form>
-            {% endif %}
+            <form action="{% url "review_create" b_pk=book.pk %}" method="post" class="border p-3 rounded">
+                <h3>Left Review</h3>
+                <hr>
+                {% csrf_token %}
+                {% for field in review_form %}
+                    <div class="mb-3 form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-outline-primary">Send</button>
+            </form>
         </div>
+        {% endif %}
         <br>
         <div class="d-flex flex-column p-1">
             {% for review in reviews %}
@@ -90,7 +97,8 @@
                         <img src="{{ review.user.profile.avatar.url }}" alt="" class="img-fluid">
                     </div>
                     <div class="col-9 p-1">
-                        <p><a href="{% url "user_profile" review.user.username %}">{{ review.user.username }}</a></p>
+                        <h4><a href="{% url "user_profile" review.user.username %}">{{ review.user.username }}</a></h4>
+                        <small class="text-muted">{{ review.created_at|date:"d.m.Y" }}</small>
                         <p>{{ review.get_stars }}</p>
                         <p>{{ review.text }}</p>
                     </div>
@@ -112,6 +120,11 @@
                             <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
                         {% endif %}
                             <span>{{ review.likes.count }}</span>
+                        {% if review.user == user %}
+                        <button type="button" class="btn btn-outline-dark me-1" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -137,73 +150,17 @@
             {% endfor %}
             <button type="submit" class="btn btn-outline-primary">Send</button>
         </form>
-
         <div class="d-flex flex-column">
             <h2>Commnets</h2>
             {% for comment in comments %}
-                <div class="row  mt-2 mb-2">
-                    <div class="col-1 row-1" style="">
-                        <img src="{{ comment.user.profile.avatar.url }}" alt="" class="img-fluid ">
-                    </div>
-                    <div class="col-10 p-1">
-                        <p><a href="{% url "user_profile" comment.user.username %}">{{ comment.user.username }}</a></p>
-                        
-                        <p>{{ comment.text }}</p>
-                    </div>
-                    <div class="col-1 p-1">
-                        {% if user.is_authenticated %}
-                            <form method="post" action="{% url 'comment_like' pk=book.pk c_pk=comment.id %}" class="d-inline me-1">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link p-0 border-0">
-                                    {% if comment.is_liked_by_user %}
-                                        <i class="bi bi-suit-heart-fill text-danger"
-                                            style="font-size: 20px;"></i>
-                                    {% else %}
-                                        <i class="bi bi-suit-heart"
-                                            style="font-size: 20px;"></i>
-                                    {% endif %}
-                                </button>
-                            </form>
-                        {% else %}
-                            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
-                        {% endif %}
-                            <span>{{ comment.likes.count }}</span>
-                    </div>
-                </div>
-                {% for reply in comment.replies.all %}
-                <div class="row mt-2 mb-2 ms-2">
-                    <div class="col-1 row-1">
-                        <img src="{{ reply.user.profile.avatar.url }}" alt="" class="img-fluid">
-                    </div>
-                    <div class="col-10 p-1">
-                        <p><a href="{% url "user_profile" reply.user.username %}">{{ reply.user.username }}</a></p>
-                        
-                        <p>{{ reply.text }}</p>
-                    </div>
-                    <div class="col-1 p-1">
-                        {% if user.is_authenticated %}
-                            <form method="post" action="{% url 'comment_like' pk=book.pk c_pk=comment.id %}" class="d-inline me-1">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link p-0 border-0">
-                                    {% if reply.is_liked_by_user %}
-                                        <i class="bi bi-suit-heart-fill text-danger"
-                                            style="font-size: 20px;"></i>
-                                    {% else %}
-                                        <i class="bi bi-suit-heart"
-                                            style="font-size: 20px;"></i>
-                                    {% endif %}
-                                </button>
-                            </form>
-                        {% else %}
-                            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
-                        {% endif %}
-                            <span>{{ comment.likes.count }}</span>
-                    </div>
-                    
-                </div>
-
-                {% endfor %}
-                <form action="{% url "comment_create" book.pk %}" method="post" class="border p-3 rounded">
+                    {% include "books/_comments.html" with comment=comment %}
+            <div>
+                <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="bi bi-pencil me-2"></i>Reply
+                </button>
+            </div>
+                <div class="collapse" id="collapseExample">
+                    <form action="{% url "comment_create" book.pk %}" method="post" class="border p-3 rounded">
                         {% csrf_token %}
                         <h3>Add reply</h3>
                         <hr>
@@ -221,8 +178,45 @@
                             </div>
                         {% endfor %}
                         <button type="submit" class="btn btn-outline-primary">Send</button>
-                    </form>
+                        </form>
+                </div>
             {% endfor %}
         </div>
     </div>
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Edit Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="modal-body">
+                    <form action="{% url "review_edit" b_pk=book.pk %}" method="post" class="border p-3 rounded">
+                        <h3>Left Review</h3>
+                        <hr>
+                        {% csrf_token %}
+                        {% for field in review_form %}
+                            <div class="mb-3 form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-outline-primary">Send</button>
+                    </form>
+                </div>
+            {% endif %}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    
 {% endblock content %}

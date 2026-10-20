@@ -25,6 +25,12 @@
                     <p class="card-text text-truncate">{{ book.description }}</p>
                     <p class="card-text">
                         <small class="text-muted">
+                            <span>Rating: </span>
+                            {{ book.get_avg_rating }}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">
                             <span>Author: </span>
                             {% for author in book.author.all %}
                                 <span>{{ author.full_name }}</span>

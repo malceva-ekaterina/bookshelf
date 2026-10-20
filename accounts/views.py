@@ -31,7 +31,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
             context['is_author'] = True
         else:
             context['is_author'] = True
-        if Follow.objects.filter(author=self.object, follower=self.request.user).exists():
+        if self.request.user.is_authenticated and Follow.objects.filter(author=self.object, follower=self.request.user).exists():
             context['is_follower'] = True
         else:
             context['is_follower'] = False
@@ -52,7 +52,7 @@ class UserProfileView(DetailView):
             context['is_author'] = True
         else:
             context['is_author'] = False
-        if Follow.objects.filter(author=self.object, follower=self.request.user).exists():
+        if self.request.user.is_authenticated and Follow.objects.filter(author=self.object, follower=self.request.user).exists():
             context['is_follower'] = True
         else:
             context['is_follower'] = False

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Avg
 
 from likes.models import Like
 # Create your models here.
@@ -32,6 +33,9 @@ class Comment(models.Model):
     
     def __str__(self):
         return f'User {self.user.username} wrote {self.text}'
+    
+   
+    
 
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -87,6 +91,11 @@ class Book(models.Model):
                 if img.height > 300 or img.width > 300:
                     img.thumbnail((300, 300), Image.Resampling.LANCZOS)
                     img.save(self.cover.path)
+    @property
+    def get_avg_rating(self):
+        result = self.reviews.aggregate(Avg('rating'))
+        return result['rating__avg']
+    
 class Rating(models.IntegerChoices):
         ONE = 1, '⭐'
         TWO = 2, '⭐⭐'

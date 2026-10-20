@@ -3,7 +3,7 @@ body {
 }
 header {
     padding: 10px;
-    background-color: #463a2c;
+    background-color: #b49979;
     margin-bottom: 10px;
 }
 
@@ -17,4 +17,21 @@ header {
     width: 100%;
     object-fit: cover;
     align-content: center;
+}
+.rating > *{
+
+    font-size: 40px;
+}
+.bar {
+    width:fit-content;
+    color: #ffc402;
+    
+    mask-image: linear-gradient(
+            to right, 
+            #000000 calc(var(--progress) * 1%), 
+            transparent calc(var(--progress) * 1%)
+        );
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
 }

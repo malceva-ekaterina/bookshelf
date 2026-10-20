@@ -1,0 +1,27 @@
+{% extends "bade.html" %}
+{% block title %}Edit Review{% endblock title %}
+{% block content %}
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Edit Review</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% if user.is_authenticated %}
+            <div class="modal-body">
+                <form action="{% url "review_edit" b_pk=book.pk %}" method="post">
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-outline-primary">Edit</button>
+                </form>
+            </div>
+            {% endif %}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>    
+{% endblock content %}
