@@ -7,7 +7,7 @@ class BookForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
+            existing_classes = field.widget.attrs.get('class', 'form-input')
             field.widget.attrs['class'] = (
                 f'{existing_classes} form-control'
             ).strip()
@@ -23,7 +23,7 @@ class BookForm(forms.ModelForm):
         model = Book
         fields = ('title', 'description', 'cover', 'genres', 'author')
         widgets = {
-                    "description": forms.Textarea(attrs={"class": 'form-control', "rows": 2}),
+                    "description": forms.Textarea(attrs={"rows": 2}),
                 }
         
         
@@ -32,7 +32,7 @@ class CommentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             for field in self.fields.values():
-                existing_classes = field.widget.attrs.get('class', '')
+                existing_classes = field.widget.attrs.get('class', 'form-input')
                 field.widget.attrs['class'] = (
                     f'{existing_classes} form-control'
                 ).strip()
@@ -40,7 +40,7 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('text',)
         widgets = {
-            "text": forms.Textarea(attrs={"class": 'form-control', "rows": 3}),
+            "text": forms.Textarea(attrs={"rows": 3}),
         }
 
        
@@ -48,7 +48,7 @@ class GenreForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             for field in self.fields.values():
-                existing_classes = field.widget.attrs.get('class', '')
+                existing_classes = field.widget.attrs.get('class', 'form-input')
                 field.widget.attrs['class'] = (
                     f'{existing_classes} form-control'
                 ).strip()
@@ -60,7 +60,7 @@ class AuthorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             for field in self.fields.values():
-                existing_classes = field.widget.attrs.get('class', '')
+                existing_classes = field.widget.attrs.get('class', 'form-input')
                 field.widget.attrs['class'] = (
                     f'{existing_classes} form-control'
                 ).strip()
@@ -72,7 +72,7 @@ class ReviewForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             for field in self.fields.values():
-                existing_classes = field.widget.attrs.get('class', '')
+                existing_classes = field.widget.attrs.get('class', 'form-input')
                 field.widget.attrs['class'] = (
                     f'{existing_classes} form-control'
                 ).strip()
@@ -80,6 +80,6 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ('rating', 'text')
         widgets = {
-            "text": forms.Textarea(attrs={"class": 'form-control', "rows": 3}),
+            "text": forms.Textarea(attrs={"rows": 3}),
         }
 

@@ -1,5 +1,5 @@
-<div class="row  mt-2 mb-2">
-    <div class="col-1 row-1" style="">
+<div class="row mt-2 mb-2">
+    <div class="col-1" style="">
         <img src="{{ comment.user.profile.avatar.url }}" alt="" class="img-fluid ">
     </div>
     <div class="col-10 p-1">
@@ -13,16 +13,16 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-link p-0 border-0">
                     {% if comment.is_liked_by_user %}
-                        <i class="bi bi-suit-heart-fill text-danger"
+                        <i class="bi bi-suit-heart-fill red"
                             style="font-size: 20px;"></i>
                     {% else %}
-                        <i class="bi bi-suit-heart"
+                        <i class="bi bi-suit-heart red"
                             style="font-size: 20px;"></i>
                     {% endif %}
                 </button>
             </form>
         {% else %}
-            <i class="bi bi-suit-heart" style="font-size: 20px;"></i>
+            <i class="bi bi-suit-heart red" style="font-size: 20px;"></i>
         {% endif %}
             <span>{{ comment.likes_count }}</span>
     </div>

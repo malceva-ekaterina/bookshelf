@@ -7,7 +7,7 @@ class SingUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
+            existing_classes = field.widget.attrs.get('class', 'form-input')
             field.widget.attrs['class'] = (
                 f'{existing_classes} form-control'
             ).strip()
@@ -19,7 +19,7 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
+            existing_classes = field.widget.attrs.get('class', 'form-input')
             field.widget.attrs['class'] = (
                 f'{existing_classes} form-control'
             ).strip()
@@ -35,7 +35,7 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            existing_classes = field.widget.attrs.get('class', '')
+            existing_classes = field.widget.attrs.get('class', 'form-input')
             field.widget.attrs['class'] = (
                 f'{existing_classes} form-control'
             ).strip()

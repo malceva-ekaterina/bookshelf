@@ -1,0 +1,49 @@
+<div class="book_card">
+    <div class="book_img img-box col-md-5">
+        <img src="{{ book.cover.url}}" class="img-fluid img" alt="">
+    </div>
+    <div class="book_info d-flex flex-column col-7 h-100" >
+        <div class="book_title">
+            <h2 class="m-0 w-100">
+                <a href="{% url "book_detail" book.pk%}" >{{ book.title }}</a>
+            </h2>
+        </div>
+        <div class="book_descr">
+            <p class="descr small-text">{{ book.description }}</p>
+            <div class="d-flex flex-column">
+                <p class="small-text">
+                    <span>Rating: </span>
+                    <span>{{ book.get_avg_rating|floatformat:1|default:"0" }}</span>
+                </p>
+                <p class="small-text">
+                    <span>Author: </span>
+                    {% for author in book.author.all %}
+                        <span>{{ author.full_name }}</span>
+                    {% endfor %}
+                </p>
+                <p class="small-text">
+                    <span>Genre: </span>
+                    {% for genre in book.genres.all %}
+                    <span>{{ genre.name }}</span>
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+
+        <div class="items">
+            <div class="item">
+                <i class="bi bi-suit-heart"></i>
+                <span>{{ book.likes.count }}</span>
+            </div>
+            <div class="item">
+                <i class="bi bi-chat-square-quote"></i>
+                <span>{{ book.reviews.count }}</span>
+            </div>
+            <div class="item">
+                <i class="bi bi-chat-square-dots"></i>
+                <span>{{ book.comments.count }}</span>
+            </div>
+        </div>
+        
+    </div>
+</div>
