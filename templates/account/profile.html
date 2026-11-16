@@ -39,11 +39,13 @@
         </div>
     </div>
     <hr>
-    <a href="{% url "book_create" %}" class="btn green-btn"><i class="bi bi-plus-circle pe-2"></i>Add book</a>
+    {% if is_author %}
+        <a href="{% url "book_create" %}" class="btn green-btn"><i class="bi bi-plus-circle pe-2"></i>Add book</a>
+    {% endif %}
     <h2>{{ profile_user.username }} Books</h2>
     <div class="books">
         {% for book in profile_user.books.all %}
-            {% include "books/book_card.html" %}
+            {% include "books\book_card.html" %}
         {% endfor %}    
     </div>
 {% endblock content %}

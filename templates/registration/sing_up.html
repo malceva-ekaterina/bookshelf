@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Sing Up{% endblock title %}
 {% block content %}
-<form method="post" class="border p-3 rounded">
+<form method="post" class="border-form p-3 rounded">
     <h1>Sing Up</h1>
     <hr>
     {% csrf_token %}
@@ -22,6 +22,6 @@
     {{ form.non_field_errors }}
 
   
-    <button type="submit" class="btn btn-outline-primary">Create Account</button>
+    <button type="submit" class="btn green-btn">Create Account</button>
 
 {% endblock content %}

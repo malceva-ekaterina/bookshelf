@@ -20,6 +20,9 @@
                     <a class="nav-link white" href="{% url "profile" %}" aria-current="page">Profile</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link white" href="{% url "follow_books" %}" aria-current="page">Follow</a>
+                </li>
+                <li class="nav-item">
                     <form action="{% url "logout" %}" method="post">
                         {% csrf_token %}
                         <input type="submit" value="LogOut" class="btn btn-link white">

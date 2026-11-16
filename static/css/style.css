@@ -10,6 +10,9 @@
     --red: #662424;
 
 }
+a {
+    color: var(--d-green);
+}
 .border-form {
     border: var(--l-brown) 1px solid;
 }
@@ -55,7 +58,10 @@ header {
     margin: 0;
     color: var(--brown);
 }
-.small-text > *{
+.small-text > * {
+    color: var(--d-green);
+}
+.small-text > span > a {
     color: var(--d-green);
 }
 .books {

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock title %}
+{% block content %}
+    <h1>Books your following</h1>
+    <div class="books">
+        {% for book in books %}
+            {% include "books/book_card.html"%}
+        {% endfor %}    
+    </div>
+    
+    
+{% endblock content %}

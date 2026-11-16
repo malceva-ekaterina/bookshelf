@@ -27,6 +27,10 @@
                     <span>{{ genre.name }}</span>
                     {% endfor %}
                 </p>
+                <p class="small-text">
+                    <span>Owner: </span>
+                    <span><a href="{% url "user_profile" book.owner.username %}">{{ book.owner.username }}</a></span>
+                </p>
             </div>
         </div>
 

@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Avg, Q, Subquery, OuterRef, Count
 from django.db.models.functions import Coalesce
 from .models import *
+from accounts.models import Follow
 from .forms import *
 from likes.utils import *
 from collections import defaultdict
@@ -211,3 +212,13 @@ def review_update(request, b_pk):
         if form.is_valid():
             form.save()
     return redirect('book_detail', b_pk)
+
+class FollowingAuthorBookListView(ListView):
+    model = Book
+    template_name = "books/following_author_books.html"
+    context_object_name = 'books'
+
+    def get_queryset(self):
+        user = self.request.user
+        
+        return super().get_queryset().filter(owner__followers__follower=user)

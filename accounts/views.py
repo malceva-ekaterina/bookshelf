@@ -30,7 +30,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         if self.object == self.request.user:
             context['is_author'] = True
         else:
-            context['is_author'] = True
+            context['is_author'] = False
         if self.request.user.is_authenticated and Follow.objects.filter(author=self.object, follower=self.request.user).exists():
             context['is_follower'] = True
         else:
