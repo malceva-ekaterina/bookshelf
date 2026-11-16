@@ -93,6 +93,7 @@ header {
 }
 .book_title {
     border-bottom: var(--brown) 1px solid;
+    overflow-wrap: break-word;
     margin-bottom: 5px;
 }
 .book_title > h2 > a {
@@ -101,9 +102,15 @@ header {
     text-decoration: none;
     color: var(--brown);
 }
+.absol-button {
+    position: absolute;
+    right: 0;
+    padding: 5px;
+}
 .book_info {
     width: 60%;
     padding:5px 10px;
+    position: relative;
 }
 .descr {
     width: 100%;
@@ -160,6 +167,20 @@ header {
     mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
+}
+.red-btn {
+    color: var(--white);
+    background-color: var(--red);
+}
+.red-btn i {
+    color: var(--white);
+}
+.red-btn:hover {
+    color: var(--white);
+    background-color: var(--brown);
+}
+.red-btn:hover i{
+    color: var(--white);
 }
 .green-btn {
     color: var(--white);

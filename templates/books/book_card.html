@@ -3,10 +3,26 @@
         <img src="{{ book.cover.url}}" class="img-fluid img" alt="">
     </div>
     <div class="book_info d-flex flex-column col-7 h-100" >
-        <div class="book_title">
+        <div class="book_title" style=" white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;">
             <h2 class="m-0 w-100">
                 <a href="{% url "book_detail" book.pk%}" >{{ book.title }}</a>
             </h2>
+        </div>
+        <div class="absol-button">
+            {% url 'profile' as user_profile %}
+                {% if request.path == user_profile %}    
+                    {% if is_author %}
+                        <a href="{% url "book_edit" book.pk %}" class="btn green-btn"><i class="bi bi-pencil"></i></a>
+                        <form action="{% url "book_delete" book.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn red-btn m-0">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
         </div>
         <div class="book_descr">
             <p class="descr small-text">{{ book.description }}</p>
